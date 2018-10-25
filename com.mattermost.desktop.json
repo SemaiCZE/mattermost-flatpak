@@ -1,0 +1,49 @@
+{
+    "app-id": "com.mattermost.desktop",
+    "base": "io.atom.electron.BaseApp",
+    "base-version": "18.08",
+    "runtime": "org.freedesktop.Platform",
+    "runtime-version": "18.08",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "mattermost-flatpak",
+    "separate-locales": false,
+    "finish-args": [
+        "--share=ipc",
+		"--socket=x11",
+        "--socket=pulseaudio",
+        "--share=network",
+        "--device=all",
+        "--filesystem=home",
+        "--filesystem=xdg-run/dconf",
+        "--filesystem=~/.config/dconf:ro",
+        "--env=DCONF_USER_CONFIG_DIR=.config/dconf",
+        "--talk-name=ca.desrt.dconf",
+        "--talk-name=org.freedesktop.Notifications"
+    ],
+    "modules": [
+        {
+            "name": "mattermost-desktop",
+            "buildsystem": "simple",
+			"build_commands": [
+                "mkdir -p /app/main /app/bin",
+                "cp -ra main/* /app/main/",
+				"install mattermost.sh /app/bin/mattermost-flatpak"
+            ],
+            "sources" : [
+                {
+                    "type": "script",
+                    "dest-filename": "mattermost.sh",
+                    "commands": ["exec env TMPDIR=$XDG_CACHE_HOME /app/main/mattermost-desktop \"$@\""]
+                },
+                {
+                    "type": "archive",
+                    "only-arches": ["x86_64"],
+                    "url": "https://releases.mattermost.com/desktop/4.1.2/mattermost-desktop-4.1.2-linux-x64.tar.gz",
+                    "sha256": "3a4d036fcce7027455be189148758963e1baf94bd50b04047536e8050e32b699",
+                    "dest": "main"
+                }
+            ]
+        }
+    ]
+}
+
